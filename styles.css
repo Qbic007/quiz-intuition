@@ -59,6 +59,11 @@ body {
     justify-self: flex-end;
 }
 
+.name {
+    justify-content: center;
+    font-weight: bold;
+}
+
 .title {
     padding: 20px;
     text-align: center;
