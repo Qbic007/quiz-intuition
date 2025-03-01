@@ -75,66 +75,56 @@ async function initialize() {
             const chosenProfession = e.target.getAttribute('data-profession');
             const isMatch = correctProfession === chosenProfession;
 
-            // Blink both elements
             if (isMatch) {
-                blinkElement(selectedName, 'correct');
-                blinkElement(e.target, 'correct');
-            } else {
-                blinkElement(selectedName, 'incorrect', true);
-                blinkElement(e.target, 'incorrect', true);
-            }
-
-            // After the blinking, handle match results
-            setTimeout(() => {
-                // Disable professions
+                selectedName.classList.add('correct');
+                e.target.classList.add('correct');
+                
+                // Сразу перемещаем элементы наверх при правильном совпадении
+                moveToTop(selectedName, namesColumn);
+                moveToTop(e.target, professionsColumn);
+                
+                // Отключаем профессии сразу для правильного ответа
                 Array.from(professionsColumn.getElementsByClassName('option')).forEach(option => {
                     option.classList.add('disabled');
                 });
-              
-                if (isMatch) {
-                    // Move to the top and set as correct
-                    selectedName.classList.add('correct');
-                    e.target.classList.add('correct');
-                    moveToTop(selectedName, namesColumn);
-                    moveToTop(e.target, professionsColumn);
-                } else {
-                    // Reset colors for incorrect match
-                    selectedName.classList.remove('selected');
-                    e.target.classList.remove('selected');
-                }
-
-                // Reset selections
+                
+                // Сбрасываем выделение
                 selectedName = null;
-
-                // Re-enable all options
+                
+                // Включаем все неправильные варианты обратно
                 Array.from(namesColumn.getElementsByClassName('option')).forEach(option => {
                     if (!option.classList.contains('correct')) {
                         option.classList.remove('disabled');
                     }
                 });
-            }, 1000); // Wait for 1 second for the blinking effect
+            } else {
+                // При неправильном совпадении добавляем класс 'incorrect'
+                selectedName.classList.add('incorrect');
+                e.target.classList.add('incorrect');
+                
+                // Убираем класс 'incorrect' через секунду и возвращаем исходное состояние
+                setTimeout(() => {
+                    selectedName.classList.remove('incorrect', 'selected');
+                    e.target.classList.remove('incorrect', 'selected');
+                    
+                    // Отключаем профессии после анимации
+                    Array.from(professionsColumn.getElementsByClassName('option')).forEach(option => {
+                        option.classList.add('disabled');
+                    });
+                    
+                    // Сбрасываем выделение
+                    selectedName = null;
+                    
+                    // Включаем все неправильные варианты обратно
+                    Array.from(namesColumn.getElementsByClassName('option')).forEach(option => {
+                        if (!option.classList.contains('correct')) {
+                            option.classList.remove('disabled');
+                        }
+                    });
+                }, 1000);
+            }
         }
     });
-
-    function blinkElement(element, state, isIncorrect = false) {
-        const blinkDuration = isIncorrect ? 1000 : 1000; // Blink duration for incorrect
-        const blinkInterval = isIncorrect ? 300 : 1000; // Frequency for incorrect blinking
-
-        element.classList.add(state);
-
-        const blink = setInterval(() => {
-            if (element.classList.contains(state)) {
-                element.classList.remove(state);
-            } else {
-                element.classList.add(state);
-            }
-        }, blinkInterval);
-
-        setTimeout(() => {
-            clearInterval(blink);
-            element.classList.remove(state);
-        }, blinkDuration);
-    }
 
     function moveToTop(element, column) {
         column.insertBefore(element, column.firstChild);

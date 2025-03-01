@@ -45,7 +45,7 @@ body {
     pointer-events: none; /* Prevent clicking */
 }
 
-.incorrect {
+.option.incorrect {
     background-color: red;
     color: white;
 }
