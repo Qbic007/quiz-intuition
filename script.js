@@ -21,11 +21,27 @@ async function initialize() {
 
     // Function to create option elements
     function createOptions(column, options, isProfession = false) {
-        options.forEach(option => {
+        options.forEach((option) => {
             const div = document.createElement('div');
             div.className = 'option';
             const span = document.createElement('span');
             span.textContent = option;
+            span.classList.add('typing-effect');
+            
+            // Устанавливаем случайную задержку и длительность анимации
+            const duration = 0.5 + Math.random() * 0.5; // от 0.5 до 1 секунды
+            const delay = Math.random() * 2; // от 0 до 2 секунд
+            span.style.setProperty('--typing-duration', `${duration}s`);
+            span.style.setProperty('--typing-steps', option.length);
+            span.style.animationDelay = `${delay}s`;
+            
+            // Добавляем обработчик окончания анимации
+            span.addEventListener('animationend', (e) => {
+                if (e.animationName === 'typing') {
+                    span.classList.add('typing-done');
+                }
+            });
+            
             div.appendChild(span);
             if (isProfession) {
                 div.setAttribute('data-profession', option);

@@ -43,6 +43,35 @@ body::before {
     to { transform: translateY(20px); }
 }
 
+@keyframes typing {
+    from { 
+        clip-path: inset(0 100% 0 0);
+    }
+    to { 
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes blink-caret {
+    from, to { border-right-color: transparent }
+    50% { border-right-color: #2ec27e }
+}
+
+.typing-effect {
+    display: inline-block;
+    white-space: pre-wrap;
+    overflow: visible;
+    border-right: 2px solid transparent;
+    clip-path: inset(0 100% 0 0);
+    animation: 
+        typing var(--typing-duration, 2s) steps(var(--typing-steps, 30)) forwards,
+        blink-caret 0.75s step-end;
+}
+
+.typing-effect.typing-done {
+    border-right-color: transparent;
+}
+
 .container {
     max-width: 1200px;
     display: flex;
