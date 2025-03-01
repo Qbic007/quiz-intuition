@@ -79,7 +79,7 @@ async function initialize() {
                 selectedName.classList.add('correct');
                 e.target.classList.add('correct');
                 
-                // Сразу перемещаем элементы наверх при правильном совпадении
+                // Анимированно перемещаем элементы наверх
                 moveToTop(selectedName, namesColumn);
                 moveToTop(e.target, professionsColumn);
                 
@@ -102,7 +102,7 @@ async function initialize() {
                 selectedName.classList.add('incorrect');
                 e.target.classList.add('incorrect');
                 
-                // Убираем класс 'incorrect' через секунду и возвращаем исходное состояние
+                // Убираем класс 'incorrect' через полсекунды и возвращаем исходное состояние
                 setTimeout(() => {
                     selectedName.classList.remove('incorrect', 'selected');
                     e.target.classList.remove('incorrect', 'selected');
@@ -121,13 +121,65 @@ async function initialize() {
                             option.classList.remove('disabled');
                         }
                     });
-                }, 1000);
+                }, 500);
             }
         }
     });
 
     function moveToTop(element, column) {
-        column.insertBefore(element, column.firstChild);
+        // Получаем все карточки в колонке
+        const cards = Array.from(column.getElementsByClassName('option'));
+        const cardHeight = element.offsetHeight + 10; // Высота карточки + margin
+        
+        // Находим индекс текущей карточки
+        const currentIndex = cards.indexOf(element);
+        
+        // Добавляем класс для анимации всем карточкам выше текущей
+        cards.forEach((card, index) => {
+            if (index < currentIndex) {
+                // Карточки выше выбранной сдвигаем вниз на одну позицию
+                card.style.transform = `translateY(${cardHeight}px)`;
+            }
+        });
+        
+        // Форсируем reflow для начала анимации
+        element.offsetHeight;
+        
+        // Перемещаем выбранную карточку наверх
+        element.style.transform = `translateY(${-currentIndex * cardHeight}px)`;
+        
+        // После завершения анимации восстанавливаем порядок в DOM
+        setTimeout(() => {
+            // Перемещаем элемент в начало без анимации
+            element.style.transition = 'none';
+            cards.forEach(card => {
+                if (card !== element) {
+                    card.style.transition = 'none';
+                }
+            });
+            
+            // Форсируем reflow
+            element.offsetHeight;
+            
+            // Сбрасываем трансформации и перемещаем элемент
+            element.style.transform = '';
+            cards.forEach(card => {
+                if (card !== element) {
+                    card.style.transform = '';
+                }
+            });
+            column.insertBefore(element, column.firstChild);
+            
+            // Восстанавливаем анимацию
+            requestAnimationFrame(() => {
+                element.style.transition = '';
+                cards.forEach(card => {
+                    if (card !== element) {
+                        card.style.transition = '';
+                    }
+                });
+            });
+        }, 1000);
     }
 }
 
